@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的個人網站</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 導覽列 -->
+  <nav class="navbar">
+    <div class="logo" onclick="scrollToTop()">我的小屋</div>
+    <ul>
+      <li><a href="#about">自我介紹</a></li>
+      <li><a href="#experience">工作經歷</a></li>
+      <li><a href="#media">持有證照/參賽獎狀</a></li>
+      <li><a href="#slides">比賽照片/日常風景</a></li>
+      <li><a href="#contact">聯絡資訊</a></li>
+    </ul>
+  </nav>
+
+ 
+<!-- 區域一：自我介紹 -->
+
+  <section id="about" class="section">
+    <h2 class="section-title">自我介紹</h2>
+    <div class="card profile">
+      <img src="比賽照片/大頭.jpg" alt="大頭貼">
+      <div class="profile-info">
+        <h2>王彥傑</h2>
+        <p><span class="label">生日：</span>93/01/10</p>
+        <p><span class="label">學歷：</span>國立高雄科技大學第一校區 資訊管理系（大四就讀中）</p>
+        <p><span class="label">專長：</span>文書處理、資料蒐集、重點統整</p>
+        <p><span class="label">興趣：</span>拼圖、電子競技</p>
+      </div>
+    </div>
+  </section>
+
+<!-- 區域二：工作經歷 & 證照比賽 -->
+  
+  <section id="experience" class="section">
+    <h2 class="section-title">工作經歷 &amp; 比賽紀錄</h2>
+    <div class="card">
+
+      <h3 class="card-subtitle">工作經歷</h3>
+      <ul>
+        <li>逐鹿炭火燒肉：內場工讀生　2022/06 - 2022/08</li>
+        <li>高雄科技大學第一校區創新創業發展處：比賽志工　2025/10</li>
+      </ul>
+
+      <h3 class="card-subtitle">持有證照</h3>
+      <ul>
+        <li>電腦軟體應用乙級</li>
+        <li>電腦軟體應用丙級</li>
+        <li>網頁設計丙級</li>
+        <li>Application Engineer of Enterprise Resource Planning in Distribution Module</li>
+        <li>TQC Excel 2016 專業級</li>
+        <li>TQC Word 2016 專業級</li>
+        <li>TQC PowerPoint 2016 專業級</li>
+        <li>TQC 電腦繪圖設計 專業級</li>
+        <li>TQC 網頁編輯製作 專業級</li>
+        <li>TQC 影像處理 專業級</li>
+        <li>全民中文初級檢定</li>
+        <li>TOEIC 480 分</li>
+        <li>APCS 六級分</li>
+      </ul>
+
+      <h3 class="card-subtitle">比賽紀錄</h3>
+      <ul>
+        <li>2019 高中資訊學科能力複賽暨高職電腦程式設計比賽　參賽證明</li>
+        <li>2019 新興科技暨應用程式設計比賽　佳作</li>
+        <li>2019 我是創客-創意設計競賽　佳作</li>
+        <li>2020 資訊月資訊應用競賽創意APP程式設計　參賽證明</li>
+        <li>2020 資訊月資訊應用競賽創意APP程式設計　南區個人組優勝</li>
+        <li>2020 資訊月資訊應用競賽創意APP程式設計　南區團體組第三名</li>
+        <li>2020 第四屆全國高中職會展活動企劃競賽　優勝</li>
+        <li>2020 第四屆BeingLife 明日生活 萬物智聯 創作大賽　金獎</li>
+        <li>2021 全國高級中等學校商業類學生技藝競賽程式設計　參賽證明</li>
+        <li>2021 全國高級中等學校商業類學生技藝競賽程式設計　第九名</li>
+        <li>2021 第二屆高科盃全國商業智慧競賽　參賽證明</li>
+        <li>2021 樹德盃全國高中職校園投資交易模擬競賽　參賽證明</li>
+        <li>2024 全國社群大數據分析校園創新競賽　未入取</li>
+      </ul>
+
+    </div>
+  </section>
+
+  <!-- 分隔線 -->
+<hr>
+
+<!-- 區域三 + 四：證照輪播 & 參賽獎狀（左右並排） -->
+
+  <section id="media" class="section section--dual">
+    <!-- 左欄：持有證照 -->
+    <div class="dual-col">
+      <h2 class="section-title">持有證照</h2>
+      <div class="carousel-wrapper">
+        <div class="carousel" data-carousel>
+          <div class="carousel-track">
+            <img src="證照獎狀(碼)/ERP證照20240315_16183302.jpg" class="active" alt="ERP證照">
+            <img src="證照獎狀(碼)/TOEIC.jpg" alt="TOEIC">
+            <img src="證照獎狀(碼)/TQC Excel 專業級.png" alt="TQC Excel">
+            <img src="證照獎狀(碼)/TQC PPT 專業級.png" alt="TQC PPT">
+            <img src="證照獎狀(碼)/TQC Word 專業級.png" alt="TQC Word">
+            <img src="證照獎狀(碼)/TQC 影像處理.png" alt="TQC 影像處理">
+            <img src="證照獎狀(碼)/TQC 網頁編輯製作.png" alt="TQC 網頁編輯製作">
+            <img src="證照獎狀(碼)/TQC 電腦繪圖設計.png" alt="TQC 電腦繪圖設計">
+            <img src="證照獎狀(碼)/網頁設計丙級.png" alt="網頁設計丙級">
+            <img src="證照獎狀(碼)/電腦軟體應用丙級.png" alt="電腦軟體應用丙級">
+            <img src="證照獎狀(碼)/電腦軟體應用乙級.png" alt="電腦軟體應用乙級">
+            <img src="證照獎狀(碼)/全民中文初級檢定.png" alt="全民中文初級檢定">
+            <img src="證照獎狀(碼)/APCS.png" alt="APCS">
+          </div>
+          <button class="prev">&#10094;</button>
+          <button class="next">&#10095;</button>
+          <div class="carousel-footer">
+            <div class="carousel-dots"></div>
+            <div class="carousel-counter"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 中間垂直分隔線 -->
+    <div class="dual-divider"></div>
+
+    <!-- 右欄：參賽獎狀 -->
+    <div class="dual-col">
+      <h2 class="section-title">參賽獎狀</h2>
+      <div class="carousel-wrapper">
+        <div class="carousel" data-carousel>
+          <div class="carousel-track">
+            <img src="比賽獎狀/108新興程式設計佳作.jpg" class="active" alt="108新興程式設計佳作">
+            <img src="比賽獎狀/108程式設計資訊月參賽證明.jpg" alt="108程式設計資訊月參賽證明">
+            <img src="比賽獎狀/109資訊月資訊應用競賽創意APP程式設計.jpg" alt="109資訊月資訊應用競賽創意APP程式設計">
+            <img src="比賽獎狀/2020第四屆全國高中職會展活動企劃競賽.jpg" alt="2020第四屆全國高中職會展活動企劃競賽">
+            <img src="比賽獎狀/beinglife.jpg" alt="beinglife明日生活 萬物智聯 創作大賽">
+            <img src="比賽獎狀/beinglife參賽牌.jpg" alt="beinglife參賽牌">
+            <img src="比賽獎狀/創意APP程式設計-個人.jpg" alt="創意APP程式設計-個人">
+            <img src="比賽獎狀/創意APP程式設計-團體.jpg" alt="創意APP程式設計-團體">
+            <img src="比賽獎狀/勞動部108年度-我是創客創意比賽.jpg" alt="勞動部108年度-我是創客創意比賽">
+            <img src="比賽獎狀/技藝競賽參賽證明.jpg" alt="技藝競賽參賽證明">
+            <img src="比賽獎狀/教育部110學年度全國高中職技藝競賽-程式設計.jpg" alt="教育部110學年度全國高中職技藝競賽-程式設計">
+            <img src="比賽獎狀/樹德投資競賽.jpg" alt="樹德投資競賽">
+          </div>
+          <button class="prev">&#10094;</button>
+          <button class="next">&#10095;</button>
+          <div class="carousel-footer">
+            <div class="carousel-dots"></div>
+            <div class="carousel-counter"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 分隔線 -->
+  <hr><br>
+
+<!-- 區域五：比賽照片/日常風景 -->
+
+  <div id="slides" class="dual-col">
+      <h2 class="section-title">比賽照片/日常風景</h2>
+      <div class="carousel-wrapper">
+        <div class="carousel" data-carousel>
+          <div class="carousel-track cover-mode">
+            <img src="生活風景/001.jpg" class="active" alt="生活風景 001">
+            <img src="生活風景/002.jpg" alt="生活風景 002">
+            <img src="生活風景/003.jpg" alt="生活風景 003">
+            <img src="生活風景/004.jpg" alt="生活風景 004">
+            <img src="生活風景/005.jpg" alt="生活風景 005">
+            <img src="生活風景/006.jpg" alt="生活風景 006">
+            <img src="生活風景/007.jpg" alt="生活風景 007">
+            <img src="生活風景/008.jpg" alt="生活風景 008">
+            <img src="生活風景/009.jpg" alt="生活風景 009">
+            <img src="生活風景/010.jpg" alt="生活風景 010">
+            <img src="生活風景/011.jpg" alt="生活風景 011">
+            <img src="比賽照片/技藝競賽個人照.jpg" alt="技藝競賽個人照">
+            <img src="比賽照片/技藝競賽頒獎照.jpg" alt="技藝競賽頒獎照">
+            <img src="比賽照片/資訊月團體照.jpg" alt="資訊月團體照">
+            <img src="比賽照片/資訊月頒獎照.jpg" alt="資訊月頒獎照">
+            <img src="比賽照片/技藝競賽團體照.jpg" alt="技藝競賽團體照">
+            <img src="比賽照片/會展活動企劃競賽.jpg" alt="會展活動企劃競賽">
+          </div>
+          <button class="prev">&#10094;</button>
+          <button class="next">&#10095;</button>
+          <div class="carousel-footer">
+            <div class="carousel-dots"></div>
+            <div class="carousel-counter"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+<!-- 區域六：聯絡資訊 -->
+
+  <section id="contact" class="section">
+    <h2 class="section-title">聯絡資訊</h2>
+    <div class="card contact-card">
+      <div class="contact-item">
+        <span class="contact-label">Email：</span>
+        <a href="mailto:jaywang8514@gmail.com">jaywang8514@gmail.com</a>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">Phone：0908-118-732</span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">Line：0908-118-732</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>版權所有 ©2026王彥傑 All Rights Reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
