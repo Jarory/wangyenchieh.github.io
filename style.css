@@ -65,8 +65,14 @@ hr {
 }
 
 /* ── 區塊 ── */
-.section {
+/* .section {
   padding: 8% 20px 2%;
+} */
+.section {
+  padding: 50px 20px;
+}
+#about {
+  padding-top: 120px;
 }
 
 .section-title {
