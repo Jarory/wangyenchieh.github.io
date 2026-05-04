@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>踩地雷</title>
+<style>
+body{font-family:Arial;text-align:center;background:#f4f4f4;margin:0;padding:10px;}
+h1{margin:10px;}
+.menu{margin:10px;}
+button,select{padding:8px 15px;margin:5px;font-size:15px;}
+#board{display:grid;justify-content:center;gap:2px;margin-top:15px;}
+.cell{width:35px;height:35px;background:#bbb;line-height:35px;font-weight:bold;cursor:pointer;user-select:none;font-size:18px;}
+.revealed{background:#eee;}
+.mine{background:red;}
+.flag{background:gold;}
+</style>
+</head>
+<body>
+<h1>踩地雷</h1>
+<div class="menu">
+<select id="difficulty">
+<option value="8,10">初級 8x8 /10雷</option>
+<option value="12,20">中級 12x12 /20雷</option>
+<option value="16,40">高級 16x16 /40雷</option>
+</select>
+<button onclick="startGame()">開始遊戲</button>
+<button onclick="restartGame()">重新開始</button>
+</div>
+<div id="status">請先選擇難度並開始遊戲</div>
+<div id="board"></div>
+<script>
+let size=8,mineCount=10,cells=[],mines=[],revealedCount=0,started=false;
+const board=document.getElementById('board');
+function setupData(){
+  cells=[]; mines=[]; revealedCount=0;
+  board.innerHTML='';
+  const diff=document.getElementById('difficulty').value.split(',');
+  size=parseInt(diff[0]); mineCount=parseInt(diff[1]);
+  board.style.gridTemplateColumns=`repeat(${size},35px)`;
+  while(mines.length<mineCount){
+    let r=Math.floor(Math.random()*size*size);
+    if(!mines.includes(r)) mines.push(r);
+  }
+  for(let i=0;i<size*size;i++){
+    let div=document.createElement('div');
+    div.className='cell';
+    div.dataset.index=i;
+    div.onclick=()=>reveal(i);
+    div.oncontextmenu=(e)=>{e.preventDefault();toggleFlag(i);};
+    board.appendChild(div);
+    cells.push(div);
+  }
+}
+function startGame(){started=true;setupData();document.getElementById('status').innerText='遊戲進行中';}
+function restartGame(){started=false;setupData();document.getElementById('status').innerText='已重新開始';}
+function toggleFlag(i){if(!started)return;let c=cells[i];if(c.classList.contains('revealed'))return;if(c.classList.contains('flag')){c.classList.remove('flag');c.textContent='';}else{c.classList.add('flag');c.textContent='🚩';}}
+function reveal(i){if(!started)return;let c=cells[i];if(c.classList.contains('revealed')||c.classList.contains('flag'))return;c.classList.add('revealed');if(mines.includes(i)){c.classList.add('mine');c.textContent='💣';showAllMines();started=false;document.getElementById('status').innerText='你踩到地雷，遊戲失敗';return;}revealedCount++;let count=countMines(i);c.textContent=count>0?count:'';if(count===0){getNeighbors(i).forEach(n=>reveal(n));}checkWin();}
+function showAllMines(){mines.forEach(m=>{cells[m].textContent='💣';cells[m].classList.add('mine');});}
+function countMines(i){return getNeighbors(i).filter(n=>mines.includes(n)).length;}
+function getNeighbors(i){let arr=[];let row=Math.floor(i/size);let col=i%size;for(let r=-1;r<=1;r++){for(let c=-1;c<=1;c++){let nr=row+r,nc=col+c;if(nr>=0&&nr<size&&nc>=0&&nc<size)arr.push(nr*size+nc);}}return arr;}
+function checkWin(){if(revealedCount===size*size-mineCount){started=false;document.getElementById('status').innerText='恭喜你成功排除所有地雷！';}}
+</script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>豪華版貪食蛇</title>
+<style>
+body{
+  margin:0;
+  background:linear-gradient(to bottom,#1a1a1a,#2b2b2b);
+  color:white;
+  font-family:Arial;
+  text-align:center;
+}
+h1{margin:12px 0;}
+#score{
+  font-size:18px;
+  margin-bottom:8px;
+}
+button{
+  padding:8px 16px;
+  margin:6px;
+  font-size:15px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+canvas{
+  background:#111;
+  border:3px solid white;
+  max-width:92vw;
+  max-height:70vh;
+}
+.controls{
+  display:none;
+  margin-top:10px;
+}
+.controls button{
+  width:60px;
+  height:60px;
+  font-size:22px;
+}
+@media (max-width:768px){
+  .controls{display:block;}
+}
+</style>
+</head>
+<body>
+
+<h1>🐍 豪華版貪食蛇</h1>
+<div id="score">分數：0</div>
+<button onclick="startGame()">開始遊戲</button>
+<button onclick="restartGame()">重新開始</button>
+<br>
+<canvas id="game" width="420" height="420"></canvas>
+
+<div class="controls">
+  <div><button onclick="changeDir('UP')">⬆</button></div>
+  <div>
+    <button onclick="changeDir('LEFT')">⬅</button>
+    <button onclick="changeDir('DOWN')">⬇</button>
+    <button onclick="changeDir('RIGHT')">➡</button>
+  </div>
+</div>
+
+<script>
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+const box=20;
+
+let snake,food,dir,score,started=false,gameLoop=null,speed=140;
+
+document.addEventListener("keydown",direction);
+
+function initState(){
+  snake=[{x:9*box,y:10*box}];
+  food=randomFood();
+  dir="RIGHT";
+  score=0;
+  speed=140;
+  started=false;
+  document.getElementById("score").innerText="分數：0";
+  draw();
+}
+
+function randomFood(){
+  return {
+    x:Math.floor(Math.random()*20)*box,
+    y:Math.floor(Math.random()*20)*box
+  };
+}
+
+function direction(e){
+  if(e.keyCode==37 && dir!="RIGHT") dir="LEFT";
+  else if(e.keyCode==38 && dir!="DOWN") dir="UP";
+  else if(e.keyCode==39 && dir!="LEFT") dir="RIGHT";
+  else if(e.keyCode==40 && dir!="UP") dir="DOWN";
+}
+
+function changeDir(d){
+  if(d=="LEFT" && dir!="RIGHT") dir="LEFT";
+  if(d=="UP" && dir!="DOWN") dir="UP";
+  if(d=="RIGHT" && dir!="LEFT") dir="RIGHT";
+  if(d=="DOWN" && dir!="UP") dir="DOWN";
+}
+
+function collision(head,array){
+  for(let i=0;i<array.length;i++){
+    if(head.x==array[i].x && head.y==array[i].y) return true;
+  }
+  return false;
+}
+
+function drawGrid(){
+  ctx.strokeStyle="rgba(255,255,255,0.05)";
+  for(let i=0;i<420;i+=20){
+    ctx.beginPath();
+    ctx.moveTo(i,0);
+    ctx.lineTo(i,420);
+    ctx.stroke();
+  }
+  for(let j=0;j<420;j+=20){
+    ctx.beginPath();
+    ctx.moveTo(0,j);
+    ctx.lineTo(420,j);
+    ctx.stroke();
+  }
+}
+
+function draw(){
+  ctx.clearRect(0,0,420,420);
+  drawGrid();
+
+  snake.forEach((part,i)=>{
+    ctx.fillStyle = i==0 ? "#00ff88" : "#00aa55";
+    ctx.fillRect(part.x,part.y,box,box);
+  });
+
+  ctx.font="20px Arial";
+  ctx.fillText("🍎",food.x,food.y+18);
+
+  let snakeX=snake[0].x;
+  let snakeY=snake[0].y;
+
+  if(dir=="LEFT") snakeX-=box;
+  if(dir=="UP") snakeY-=box;
+  if(dir=="RIGHT") snakeX+=box;
+  if(dir=="DOWN") snakeY+=box;
+
+  if(started){
+
+    if(snakeX==food.x && snakeY==food.y){
+      score++;
+      document.getElementById("score").innerText="分數："+score;
+      food=randomFood();
+
+      if(speed>70){
+        clearInterval(gameLoop);
+        speed-=4;
+        gameLoop=setInterval(draw,speed);
+      }
+
+    }else{
+      snake.pop();
+    }
+
+    let newHead={x:snakeX,y:snakeY};
+
+    if(
+      snakeX<0 || snakeY<0 ||
+      snakeX>=420 || snakeY>=420 ||
+      collision(newHead,snake)
+    ){
+      endGame();
+      return;
+    }
+
+    snake.unshift(newHead);
+  }
+}
+
+function startGame(){
+  if(started) return;
+  started=true;
+  gameLoop=setInterval(draw,speed);
+}
+
+function endGame(){
+  clearInterval(gameLoop);
+  started=false;
+  setTimeout(()=>{
+    alert("🐍 遊戲結束！你的分數："+score);
+  },100);
+}
+
+function restartGame(){
+  clearInterval(gameLoop);
+  initState();
+}
+
+initState();
+</script>
+
+</body>
+</html>

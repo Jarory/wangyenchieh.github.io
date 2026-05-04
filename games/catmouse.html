@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>貓抓老鼠 2.0</title>
+<style>
+body{
+  margin:0;
+  text-align:center;
+  background:linear-gradient(to bottom,#1d1d1d,#2d2d2d);
+  color:white;
+  font-family:Arial;
+}
+h1{margin:12px 0;}
+#score{
+  font-size:18px;
+  margin-bottom:8px;
+}
+button{
+  padding:8px 16px;
+  margin:6px;
+  font-size:15px;
+  cursor:pointer;
+  border:none;
+  border-radius:8px;
+}
+canvas{
+  background:#111;
+  border:3px solid white;
+  max-width:92vw;
+  max-height:70vh;
+}
+.controls{
+  display:none;
+  margin-top:10px;
+}
+.controls button{
+  width:60px;
+  height:60px;
+  font-size:22px;
+}
+@media (max-width:768px){
+  .controls{display:block;}
+}
+</style>
+</head>
+<body>
+
+<h1>🐱 貓抓老鼠 2.0 🐭</h1>
+<div id="score">存活秒數：0</div>
+<button onclick="startGame()">開始遊戲</button>
+<button onclick="restartGame()">重新開始</button>
+<br>
+
+<canvas id="game" width="520" height="420"></canvas>
+
+<div class="controls">
+  <div><button onclick="moveDir('up')">⬆</button></div>
+  <div>
+    <button onclick="moveDir('left')">⬅</button>
+    <button onclick="moveDir('down')">⬇</button>
+    <button onclick="moveDir('right')">➡</button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let mouse;
+let cats;
+let warningCats = [];
+let obstacles;
+let keys = {};
+let survive = 0;
+let started = false;
+let gameLoop = null;
+let timerLoop = null;
+
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+// 測試
+function isInsideObstacle(x,y,size,obj){
+  return (
+    x < obj.x + obj.w &&
+    x + size > obj.x &&
+    y < obj.y + obj.h &&
+    y + size > obj.y
+  );
+}
+
+function generateObstacles(){
+  obstacles = [];
+
+  let count = 6; // 開局固定六個障礙物，可自己調
+
+  while(obstacles.length < count){
+    let newObs = {
+      x: Math.random()*400 + 30,
+      y: Math.random()*280 + 30,
+      w: 40 + Math.random()*30,
+      h: 40 + Math.random()*30
+    };
+
+    let overlapMouse = isInsideObstacle(50,50,24,newObs);
+    let overlap = false;
+
+    for(let obs of obstacles){
+      if(
+        newObs.x < obs.x + obs.w + 15 &&
+        newObs.x + newObs.w + 15 > obs.x &&
+        newObs.y < obs.y + obs.h + 15 &&
+        newObs.y + newObs.h + 15 > obs.y
+      ){
+        overlap = true;
+        break;
+      }
+    }
+
+    if(!overlapMouse && !overlap){
+      obstacles.push(newObs);
+    }
+  }
+}
+
+function initState(){
+  mouse = {
+    x:40,
+    y:40,
+    size:24,
+    speed:5
+  };
+
+  cats = [
+    {x:450,y:350,size:24,speed:1.5}
+  ];
+  warningCats = [];
+
+  generateObstacles();
+
+  function generateSafeCatPosition(){
+  while(true){
+    let x = Math.random()*470;
+    let y = Math.random()*370;
+
+    let tooCloseToMouse =
+      Math.abs(x - mouse.x) < 120 &&
+      Math.abs(y - mouse.y) < 120;
+
+    let insideObstacle = false;
+
+    for(let obs of obstacles){
+      if(isInsideObstacle(x,y,24,obs)){
+        insideObstacle = true;
+        break;
+      }
+    }
+
+    if(!tooCloseToMouse && !insideObstacle){
+      return {x,y};
+    }
+  }
+}
+
+  survive = 0;
+  started = false;
+  document.getElementById("score").innerText = "存活秒數：0";
+  draw();
+}
+
+function moveDir(dir){
+  if(!started) return;
+  if(dir==="up") tryMove(0,-mouse.speed);
+  if(dir==="down") tryMove(0,mouse.speed);
+  if(dir==="left") tryMove(-mouse.speed,0);
+  if(dir==="right") tryMove(mouse.speed,0);
+}
+
+function tryMove(dx,dy){
+  let newX = mouse.x + dx;
+  let newY = mouse.y + dy;
+
+  if(newX<0||newY<0||newX>canvas.width-mouse.size||newY>canvas.height-mouse.size) return;
+
+  for(let obs of obstacles){
+    if(
+      newX < obs.x+obs.w &&
+      newX+mouse.size > obs.x &&
+      newY < obs.y+obs.h &&
+      newY+mouse.size > obs.y
+    ){
+      return;
+    }
+  }
+
+  mouse.x = newX;
+  mouse.y = newY;
+}
+
+function increaseDifficulty(){
+  survive++;
+  document.getElementById("score").innerText = "存活秒數：" + survive;
+
+  // 每10秒預告生成新貓
+  if(survive % 10 === 0){
+
+  let pos = generateSafeCatPosition();
+
+  warningCats.push({
+    x:pos.x,
+    y:pos.y,
+    time:60
+  });
+
+  setTimeout(()=>{
+    cats.push({
+      x:pos.x,
+      y:pos.y,
+      size:24,
+      speed:1.5 + survive*0.02
+    });
+  },2000);
+}
+
+  cats.forEach(cat=>cat.speed += 0.02);
+}
+
+function update(){
+
+  if(keys["ArrowUp"]) tryMove(0,-mouse.speed);
+  if(keys["ArrowDown"]) tryMove(0,mouse.speed);
+  if(keys["ArrowLeft"]) tryMove(-mouse.speed,0);
+  if(keys["ArrowRight"]) tryMove(mouse.speed,0);
+
+  for(let cat of cats){
+
+  let dx = mouse.x - cat.x;
+  let dy = mouse.y - cat.y;
+
+  let moveX = dx===0 ? 0 : (dx>0 ? cat.speed : -cat.speed);
+  let moveY = dy===0 ? 0 : (dy>0 ? cat.speed : -cat.speed);
+
+  let tryX = cat.x + moveX;
+  let tryY = cat.y + moveY;
+
+  let hitObstacle = false;
+
+  for(let obs of obstacles){
+    if(
+      tryX < obs.x+obs.w &&
+      tryX+cat.size > obs.x &&
+      tryY < obs.y+obs.h &&
+      tryY+cat.size > obs.y
+    ){
+      hitObstacle = true;
+      break;
+    }
+  }
+
+  if(!hitObstacle){
+    cat.x = tryX;
+    cat.y = tryY;
+  }else{
+    // 嘗試橫向繞路
+    let altX = cat.x + moveX;
+    let altHit = false;
+
+    for(let obs of obstacles){
+      if(
+        altX < obs.x+obs.w &&
+        altX+cat.size > obs.x &&
+        cat.y < obs.y+obs.h &&
+        cat.y+cat.size > obs.y
+      ){
+        altHit = true;
+        break;
+      }
+    }
+
+    if(!altHit){
+      cat.x = altX;
+    }else{
+      // 再嘗試縱向繞路
+      let altY = cat.y + moveY;
+      let altHit2 = false;
+
+      for(let obs of obstacles){
+        if(
+          cat.x < obs.x+obs.w &&
+          cat.x+cat.size > obs.x &&
+          altY < obs.y+obs.h &&
+          altY+cat.size > obs.y
+        ){
+          altHit2 = true;
+          break;
+        }
+      }
+
+      if(!altHit2){
+        cat.y = altY;
+      }
+    }
+  }
+
+  if(
+    mouse.x < cat.x+cat.size &&
+    mouse.x+mouse.size > cat.x &&
+    mouse.y < cat.y+cat.size &&
+    mouse.y+mouse.size > cat.y
+  ){
+    endGame();
+    return;
+  }
+}
+}
+
+function drawGrid(){
+  ctx.strokeStyle="rgba(255,255,255,0.05)";
+  for(let i=0;i<canvas.width;i+=20){
+    ctx.beginPath();
+    ctx.moveTo(i,0);
+    ctx.lineTo(i,canvas.height);
+    ctx.stroke();
+  }
+  for(let j=0;j<canvas.height;j+=20){
+    ctx.beginPath();
+    ctx.moveTo(0,j);
+    ctx.lineTo(canvas.width,j);
+    ctx.stroke();
+  }
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawGrid();
+
+  obstacles.forEach(obs=>{
+    ctx.fillStyle="#6b4f2a";
+    ctx.fillRect(obs.x,obs.y,obs.w,obs.h);
+    ctx.strokeStyle="#8b6a3c";
+    ctx.strokeRect(obs.x,obs.y,obs.w,obs.h);
+  });
+
+  ctx.font="22px Arial";
+  ctx.fillText("🐭",mouse.x,mouse.y+20);
+
+  cats.forEach(cat=>{
+    ctx.fillText("🐱",cat.x,cat.y+20);
+  });
+
+  ctx.font = "24px Arial";
+  warningCats.forEach(w=>{
+  ctx.fillText("⚠", w.x, w.y+20);
+  w.time--;
+});
+
+warningCats = warningCats.filter(w=>w.time>0);
+}
+
+function gameFrame(){
+  if(!started) return;
+  update();
+  draw();
+}
+
+function startGame(){
+  if(started) return;
+  started = true;
+  gameLoop = setInterval(gameFrame,30);
+  timerLoop = setInterval(increaseDifficulty,1000);
+}
+
+function endGame(){
+  clearInterval(gameLoop);
+  clearInterval(timerLoop);
+  started = false;
+  setTimeout(()=>{
+    alert("🐱 被貓抓到了！你存活了 "+survive+" 秒");
+  },100);
+}
+
+function restartGame(){
+  clearInterval(gameLoop);
+  clearInterval(timerLoop);
+  initState();
+}
+
+initState();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>豪華打磚塊</title>
+<style>
+body{
+  margin:0;
+  background:linear-gradient(to bottom,#181818,#2a2a2a);
+  color:white;
+  text-align:center;
+  font-family:Arial;
+}
+h1{margin:12px 0;}
+#score{
+  font-size:18px;
+  margin-bottom:8px;
+}
+button{
+  padding:8px 16px;
+  margin:6px;
+  font-size:15px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+canvas{
+  background:#111;
+  border:3px solid white;
+  max-width:92vw;
+  max-height:70vh;
+}
+.controls{
+  display:none;
+  margin-top:10px;
+}
+.controls button{
+  width:80px;
+  height:60px;
+  font-size:22px;
+}
+@media (max-width:768px){
+  .controls{display:block;}
+}
+</style>
+</head>
+<body>
+
+<h1>🧱 豪華打磚塊</h1>
+<div id="score">分數：0</div>
+<button onclick="startGame()">開始遊戲</button>
+<button onclick="restartGame()">重新開始</button>
+<br>
+
+<canvas id="game" width="500" height="420"></canvas>
+
+<div class="controls">
+  <button onclick="moveLeft()">⬅ 左</button>
+  <button onclick="moveRight()">右 ➡</button>
+</div>
+
+<script>
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+
+let paddle,ball,bricks,score,started=false,gameLoop=null;
+let rightPressed=false,leftPressed=false;
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Right"||e.key==="ArrowRight") rightPressed=true;
+  if(e.key==="Left"||e.key==="ArrowLeft") leftPressed=true;
+});
+document.addEventListener("keyup",e=>{
+  if(e.key==="Right"||e.key==="ArrowRight") rightPressed=false;
+  if(e.key==="Left"||e.key==="ArrowLeft") leftPressed=false;
+});
+
+function initState(){
+  paddle={x:210,y:390,w:90,h:12,speed:7};
+  ball={x:250,y:250,dx:3,dy:-3,r:8};
+  score=0;
+  started=false;
+  document.getElementById("score").innerText="分數：0";
+
+  bricks=[];
+  for(let r=0;r<5;r++){
+    for(let c=0;c<8;c++){
+      bricks.push({
+        x:20+c*58,
+        y:40+r*28,
+        w:50,
+        h:18,
+        alive:true
+      });
+    }
+  }
+
+  draw();
+}
+
+function moveLeft(){leftPressed=true;setTimeout(()=>leftPressed=false,100);}
+function moveRight(){rightPressed=true;setTimeout(()=>rightPressed=false,100);}
+
+function drawBricks(){
+  bricks.forEach(b=>{
+    if(b.alive){
+      ctx.fillStyle="#00bfff";
+      ctx.fillRect(b.x,b.y,b.w,b.h);
+      ctx.strokeStyle="white";
+      ctx.strokeRect(b.x,b.y,b.w,b.h);
+    }
+  });
+}
+
+function drawPaddle(){
+  ctx.fillStyle="#00ff99";
+  ctx.fillRect(paddle.x,paddle.y,paddle.w,paddle.h);
+}
+
+function drawBall(){
+  ctx.beginPath();
+  ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
+  ctx.fillStyle="orange";
+  ctx.fill();
+  ctx.closePath();
+}
+
+function update(){
+  if(rightPressed && paddle.x<canvas.width-paddle.w) paddle.x+=paddle.speed;
+  if(leftPressed && paddle.x>0) paddle.x-=paddle.speed;
+
+  ball.x += ball.dx;
+  ball.y += ball.dy;
+
+  if(ball.x+ball.r>canvas.width || ball.x-ball.r<0) ball.dx=-ball.dx;
+  if(ball.y-ball.r<0) ball.dy=-ball.dy;
+
+  if(
+    ball.y+ball.r>=paddle.y &&
+    ball.x>=paddle.x &&
+    ball.x<=paddle.x+paddle.w
+  ){
+    ball.dy=-ball.dy;
+  }
+
+  for(let b of bricks){
+    if(b.alive &&
+      ball.x>b.x && ball.x<b.x+b.w &&
+      ball.y>b.y && ball.y<b.y+b.h
+    ){
+      b.alive=false;
+      ball.dy=-ball.dy;
+      score++;
+      document.getElementById("score").innerText="分數："+score;
+    }
+  }
+
+  if(ball.y>canvas.height){
+    endGame(false);
+    return;
+  }
+
+  if(score===bricks.length){
+    endGame(true);
+    return;
+  }
+}
+
+function drawGrid(){
+  ctx.strokeStyle="rgba(255,255,255,0.04)";
+  for(let i=0;i<500;i+=20){
+    ctx.beginPath();
+    ctx.moveTo(i,0);
+    ctx.lineTo(i,420);
+    ctx.stroke();
+  }
+}
+
+function render(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawGrid();
+  drawBricks();
+  drawPaddle();
+  drawBall();
+
+  if(started) update();
+}
+
+function startGame(){
+  if(started) return;
+  started=true;
+  gameLoop=setInterval(render,20);
+}
+
+function endGame(win){
+  clearInterval(gameLoop);
+  started=false;
+  setTimeout(()=>{
+    if(win){
+      alert("🎉 恭喜通關！你打碎全部磚塊！");
+    }else{
+      alert("💥 球掉下去了，挑戰失敗！");
+    }
+  },100);
+}
+
+function restartGame(){
+  clearInterval(gameLoop);
+  initState();
+}
+
+initState();
+</script>
+
+</body>
+</html>

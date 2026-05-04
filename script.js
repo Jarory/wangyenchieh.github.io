@@ -68,3 +68,7 @@ document.querySelectorAll('[data-carousel]').forEach(carousel => {
 
   startAuto();
 });
+
+function openGame(url) {
+  window.open(url, "_blank", "width=900,height=700");
+}
