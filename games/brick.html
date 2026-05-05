@@ -78,7 +78,14 @@ document.addEventListener("keyup",e=>{
 
 function initState(){
   paddle={x:210,y:390,w:90,h:12,speed:7};
-  ball={x:250,y:250,dx:3,dy:-3,r:8};
+  ball={
+  x:250,
+  y:375,
+  dx:3,
+  dy:-3,
+  r:8,
+  launched:false
+};
   score=0;
   started=false;
   document.getElementById("score").innerText="分數：0";
@@ -97,10 +104,15 @@ function initState(){
   }
 
   draw();
+  resetBallOnPaddle();
 }
 
 function moveLeft(){leftPressed=true;setTimeout(()=>leftPressed=false,100);}
 function moveRight(){rightPressed=true;setTimeout(()=>rightPressed=false,100);}
+function resetBallOnPaddle(){
+  ball.x = paddle.x + paddle.w/2;
+  ball.y = paddle.y - ball.r - 2;
+}
 
 function drawBricks(){
   bricks.forEach(b=>{
@@ -130,8 +142,12 @@ function update(){
   if(rightPressed && paddle.x<canvas.width-paddle.w) paddle.x+=paddle.speed;
   if(leftPressed && paddle.x>0) paddle.x-=paddle.speed;
 
+  if(!ball.launched){
+  resetBallOnPaddle();
+  }else{
   ball.x += ball.dx;
   ball.y += ball.dy;
+}
 
   if(ball.x+ball.r>canvas.width || ball.x-ball.r<0) ball.dx=-ball.dx;
   if(ball.y-ball.r<0) ball.dy=-ball.dy;
@@ -188,9 +204,14 @@ function render(){
 }
 
 function startGame(){
-  if(started) return;
-  started=true;
-  gameLoop=setInterval(render,20);
+  if(!gameLoop){
+    gameLoop=setInterval(render,20);
+  }
+
+  if(!started){
+    started=true;
+    ball.launched=true;
+  }
 }
 
 function endGame(win){
@@ -207,6 +228,7 @@ function endGame(win){
 
 function restartGame(){
   clearInterval(gameLoop);
+  gameLoop=null;
   initState();
 }
 
