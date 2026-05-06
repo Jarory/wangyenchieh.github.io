@@ -72,3 +72,13 @@ document.querySelectorAll('[data-carousel]').forEach(carousel => {
 function openGame(url) {
   window.open(url, "_blank", "width=900,height=700");
 }
+
+function toggleMenu(){
+  document.querySelector(".nav-links").classList.toggle("active");
+}
+
+document.querySelectorAll(".nav-links a").forEach(link=>{
+  link.addEventListener("click",()=>{
+    document.querySelector(".nav-links").classList.remove("active");
+  });
+});
